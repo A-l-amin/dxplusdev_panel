@@ -138,7 +138,7 @@ rm -f /etc/hysteria/config.json
 wget -O /etc/hysteria/config.json "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/config.json"
 
 # Replace placeholders
-sed -i "s|mediatekvpn|$OBFS|g" /etc/hysteria/config.json
+sed -i "s|dxplusdev|$OBFS|g" /etc/hysteria/config.json
 
 cat <<"EOM" >/etc/hysteria/.auth.sh
 #!/bin/bash
