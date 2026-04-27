@@ -190,7 +190,7 @@ chmod 755 /etc/hysteria/.auth.sh
 sysctl -w net.core.rmem_max=16777216
 sysctl -w net.core.wmem_max=16777216
 
-wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/badvpn-udpgw64"
+wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
 } &>/dev/null
 }
@@ -230,7 +230,7 @@ clear
 echo 'Installing proxy.'
 {
 # Download and install custom squid init script
-wget -q --no-check-certificate -O /etc/init.d/squid https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/squid.sh
+wget -q --no-check-certificate -O /etc/init.d/squid https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/squid.sh
 chmod +x /etc/init.d/squid
 update-rc.d squid defaults
 
@@ -316,7 +316,7 @@ chmod 644 ERR_INVALID_URL
 cd /etc || exit 1
 
 # Download socks.py
-wget -q 'https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/socks.py' -O /etc/socks.py
+wget -q 'https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/socks.py' -O /etc/socks.py
 dos2unix /etc/socks.py
 chmod +x /etc/socks.py
 
@@ -501,7 +501,7 @@ sed -i "s|DBNAME|$DBNAME|g" /etc/openvpn/login/config.sh
 
 #====================================================
 #	Finalizing Server Authentication
-#	Finalized: MtkDex Developer
+#	Finalized: Dxplusdev Developer
 #====================================================
 /bin/cat <<"EOM" >/etc/openvpn/login/auth_vpn
 #!/bin/bash
@@ -703,9 +703,9 @@ mkdir -m 777 $DNSCONFIG
 
 # BUILD DNSTT SERVER
 cd $DNSDIR/dnstt/dnstt-server
-wget -O dnstt-server "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/dnstt-server"
+wget -O dnstt-server "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/dnstt-server"
 chmod +x dnstt-server
-wget -O dnstt-client "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/dnstt-client"
+wget -O dnstt-client "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/dnstt-client"
 chmod +x dnstt-client
 
 ./dnstt-server -gen-key -privkey-file server.key -pubkey-file server.pub
@@ -728,7 +728,7 @@ dnsresolver=$dnsresolver" >> $DNSCONFIG/config
 secretkey='server'
 
 #API Details
-wget -O /etc/authentication.sh "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/authentication.sh"
+wget -O /etc/authentication.sh "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/authentication.sh"
 
 # Cron job for authentication check
 cat > /etc/cron.d/account <<EOF
@@ -774,8 +774,11 @@ DNS PUBLIC KEY : $(cat /root/.dns/server.pub)
 
 -----------------------
 
-FB Page : https://www.facebook.com/mohammad.abdula24
-Whatsapp Contact: https://wa.link/sgmw64
+Script Made : Dxplusdev Bd
+WhatsApp    : http://wa.me/+8801790026703
+Gmail       : dxplusdev@gmail.com    
+
+For issues or suggestions please Contact DX PLUS DEV (https://t.me/dxplusdeveloper).
 EOF
 
 #install client-sldns.service
@@ -1032,7 +1035,7 @@ sudo systemctl enable dexter
 sudo systemctl start dexter.service
 
 cat <<EOF > /root/.web/index.php
-Made with love by: MediatekVpn Developer...
+Made with love by: Dxplusdev...
 EOF
 
 cat <<EOF > /root/.ports
