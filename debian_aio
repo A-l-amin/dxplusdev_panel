@@ -350,7 +350,7 @@ fi
 
 # Download and set up Python scripts (configs in /etc)
 for file in socks-ssh.py socks-ws-ssh.py socks-ws-ssl.py; do
-wget -q "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/$file" -O "/etc/$file"
+wget -q "https://raw.githubusercontent.com/dplusdevrepolatest/server_script/refs/heads/repo/$file" -O "/etc/$file"
 dos2unix "/etc/$file"
 chmod 644 "/etc/$file"
 done
@@ -364,7 +364,7 @@ declare -A files=(
 
 for src in "${!files[@]}"; do
 dst="${files[$src]}"
-wget -q "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/$src" -O "/etc/$dst"
+wget -q "https://raw.githubusercontent.com/dplusdevrepolatest/server_script/refs/heads/repo/$src" -O "/etc/$dst"
 chmod +x "/etc/$dst"
 done
 
@@ -690,6 +690,8 @@ chmod 755 /etc/openvpn/login/auth_vpn
 
 #====================================================
 #   Install SlowDNS
+#	  Finalized: Dxplusdev Developer
+
 #====================================================
 install_slowdns (){
 echo "Installing dns..."
