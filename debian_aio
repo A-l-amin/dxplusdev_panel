@@ -110,7 +110,7 @@ StartLimitIntervalSec=0
 EOF
 
 # Download banner
-wget -q -O /etc/banner "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/SshBanner"
+wget -q -O /etc/banner "https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/SshBanner"
 chmod 644 /etc/banner
 
 # Reload systemd and restart services
@@ -132,13 +132,13 @@ echo 'Installing hysteria.'
 {
 
 # Download & install Hysteria v1.3.5
-wget -N --no-check-certificate -q -O ~/install_server.sh https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh --version v1.3.5
+wget -N --no-check-certificate -q -O ~/install_server.sh https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh --version v1.3.5
 
 # Clean old config
 rm -f /etc/hysteria/config.json
 
 # Create new config with placeholders
-wget -O /etc/hysteria/config.json "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/config.json"
+wget -O /etc/hysteria/config.json "https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/config.json"
 
 # Replace placeholders
 sed -i "s|dxplusdev|$OBFS|g" /etc/hysteria/config.json
@@ -193,7 +193,7 @@ chmod 755 /etc/hysteria/.auth.sh
 sysctl -w net.core.rmem_max=16777216
 sysctl -w net.core.wmem_max=16777216
 
-wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/badvpn-udpgw64"
+wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
 } &>/dev/null
 }
@@ -235,7 +235,7 @@ clear
 echo 'Installing proxy.'
 {
 # Download and install custom squid init script
-wget -q --no-check-certificate -O /etc/init.d/squid https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/squid.sh
+wget -q --no-check-certificate -O /etc/init.d/squid https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/squid.sh
 chmod +x /etc/init.d/squid
 update-rc.d squid defaults
 
@@ -321,7 +321,7 @@ chmod 644 ERR_INVALID_URL
 cd /etc || exit 1
 
 # Download socks.py
-wget -q 'https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/socks.py' -O /etc/socks.py
+wget -q 'https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/socks.py' -O /etc/socks.py
 dos2unix /etc/socks.py
 chmod +x /etc/socks.py
 
@@ -446,7 +446,7 @@ EOF
 sed -i "s|PORT_UDP|$PORT_UDP|g" /etc/openvpn/server.conf
 
 cat > /etc/openvpn/server2.conf <<EOF
-# OpenVPN Configuration by MTK Developer :)
+# OpenVPN Configuration by Dxplusdev Developer :)
 dev tun
 port PORT_TCP
 proto tcp
@@ -709,9 +709,9 @@ mkdir -m 777 $DNSCONFIG
 
 # BUILD DNSTT SERVER
 cd $DNSDIR/dnstt/dnstt-server
-wget -O dnstt-server "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/dnstt-server"
+wget -O dnstt-server "https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/dnstt-server"
 chmod +x dnstt-server
-wget -O dnstt-client "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/dnstt-client"
+wget -O dnstt-client "https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/dnstt-client"
 chmod +x dnstt-client
 
 ./dnstt-server -gen-key -privkey-file server.key -pubkey-file server.pub
@@ -734,7 +734,7 @@ dnsresolver=$dnsresolver" >> $DNSCONFIG/config
 secretkey='server'
 
 #API Details
-wget -O /etc/authentication.sh "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/authentication.sh"
+wget -O /etc/authentication.sh "https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/authentication.sh"
 
 # Cron job for authentication check
 cat > /etc/cron.d/account <<EOF
@@ -1018,7 +1018,7 @@ systemctl enable openvpn@server2.service
 systemctl start openvpn@server2.service
 
 # Create rc.local script
-wget -O /etc/systemd/system/dexter.service "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/dexter.service"
+wget -O /etc/systemd/system/dxplusdev.service "https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/dxplusdev.service"
 
 echo '#!/bin/sh -e
 iptables-restore < /etc/iptables_rules.v4
@@ -1040,8 +1040,8 @@ sudo chmod +x /etc/rc.local
 systemctl daemon-reload
 systemctl enable hysteria-server.service
 systemctl restart hysteria-server.service
-sudo systemctl enable dexter
-sudo systemctl start dexter.service
+sudo systemctl enable dxplusdev
+sudo systemctl start dxplusdev.service
 
 cat <<EOF > /root/.web/index.php
 Made with love by: Dxplusdev...
