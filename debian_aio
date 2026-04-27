@@ -1,9 +1,10 @@
 
 #---------------[ Timezone ]-------------------------
-timedatectl set-timezone Asia/Manila
+timedatectl set-timezone Asia/Mymensingh
 
 #====================================================
 #   Install Sudo & User
+#	  Finalized: Dxplusdev Developer
 #====================================================
 install_sudo(){
 # Create user if not exists
@@ -27,6 +28,7 @@ systemctl restart ssh || systemctl restart sshd
 
 #====================================================
 #   Install Requirements
+#	  Finalized: Dxplusdev Developer
 #====================================================
 install_require() {
 clear
@@ -122,6 +124,7 @@ echo "[INFO] Dependencies, OpenSSH (22), and Dropbear (442) setup completed."
 
 #====================================================
 #   Install Hysteria UDP
+#	  Finalized: Dxplusdev Developer
 #====================================================
 install_hysteria(){
 clear
@@ -197,6 +200,7 @@ chmod +x /usr/bin/badvpn-udpgw
 
 #====================================================
 #   Install BBR
+#	  Finalized: Dxplusdev Developer
 #====================================================
 installBBR() {
 echo "Installing & enabling BBR..."
@@ -224,6 +228,7 @@ INSTALL_BBR=true
 
 #====================================================
 #   Install Squid Proxy
+#	  Finalized: Dxplusdev Developer
 #===================================================
 install_squid(){
 clear
@@ -272,7 +277,7 @@ EOF
 cd /usr/share/squid/errors/English || exit 1
 [ -f ERR_INVALID_URL ] && mv ERR_INVALID_URL ERR_INVALID_URL.bak
 cat <<'EOF' > ERR_INVALID_URL
-<!--MtkDev-->
+<!--Dxplusdev-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -370,6 +375,7 @@ sudo cp /etc/apt/sources.list_backup /etc/apt/sources.list
 
 #====================================================
 #   Install OpenVPN
+#  	Finalized: Dxplusdev Developer
 #====================================================
 install_openvpn()
 {
@@ -552,7 +558,7 @@ sed -i "s|SERVER_IP|$server_ip|g" /etc/openvpn/login/disconnect.sh
 
 #====================================================
 #	Finalizing Server Certificate
-#	Finalized: MtkDex Developer
+#	Finalized: Dxplusdev Developer
 #====================================================
 cat << EOF > /etc/openvpn/easy-rsa/keys/ca.crt
 -----BEGIN CERTIFICATE-----
@@ -837,6 +843,7 @@ systemctl start server-sldns
 
 #====================================================
 #   Install Firewall & Iptables
+#	  Finalized: Dxplusdev Developer
 #====================================================
 install_firewall_kvm() {
 clear
@@ -892,6 +899,7 @@ echo "[INFO] Firewall setup completed"
 
 #====================================================
 #   Install Stunnel & Dropbear
+#	  Finalized: Dxplusdev Developer
 #====================================================
 install_stunnel() {
   {
@@ -995,6 +1003,7 @@ sudo service stunnel4 restart
 
 #====================================================
 #   Finalize Server Setup
+#	  Finalized: Dxplusdev Developer
 #====================================================
 install_rclocal() {
     {
@@ -1009,7 +1018,7 @@ systemctl enable openvpn@server2.service
 systemctl start openvpn@server2.service
 
 # Create rc.local script
-wget -O /etc/systemd/system/dexter.service "https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/dxplusdev.service"
+wget -O /etc/systemd/system/dxplusdev.service "https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/dxplusdev.service"
 
 echo '#!/bin/sh -e
 iptables-restore < /etc/iptables_rules.v4
@@ -1059,6 +1068,7 @@ sed -i "s|PORT_SSL|$PORT_SSL|g" /root/.ports
 
 #====================================================
 #   Start Services
+#	  Finalized: Dxplusdev Developer
 #====================================================
 start_service() {
     clear
@@ -1090,6 +1100,7 @@ reboot
 
 #====================================================
 #   Main Execution
+#	  Finalized: Dxplusdev Developer
 #====================================================
 server_ip=$(curl -s ipinfo.io/ip)
 server_interface=$(ip route get 8.8.8.8 | awk '{print $5; exit}')
