@@ -108,7 +108,7 @@ StartLimitIntervalSec=0
 EOF
 
 # Download banner
-wget -q -O /etc/banner "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/SshBanner"
+wget -q -O /etc/banner "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/SshBanner"
 chmod 644 /etc/banner
 
 # Reload systemd and restart services
@@ -129,13 +129,13 @@ echo 'Installing hysteria.'
 {
 
 # Download & install Hysteria v1.3.5
-wget -N --no-check-certificate -q -O ~/install_server.sh https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh --version v1.3.5
+wget -N --no-check-certificate -q -O ~/install_server.sh https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh --version v1.3.5
 
 # Clean old config
 rm -f /etc/hysteria/config.json
 
 # Create new config with placeholders
-wget -O /etc/hysteria/config.json "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/config.json"
+wget -O /etc/hysteria/config.json "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/config.json"
 
 # Replace placeholders
 sed -i "s|mediatekvpn|$OBFS|g" /etc/hysteria/config.json
