@@ -254,7 +254,7 @@ cat <<EOF > squid.conf
 acl Firenet dst $SERVER_IP
 http_port 8080
 http_port 8181
-visible_hostname Dexter-Proxy
+visible_hostname Dxplusdev-Proxy
 acl PURGE method PURGE
 acl HEAD method HEAD
 acl POST method POST
@@ -1009,7 +1009,7 @@ systemctl enable openvpn@server2.service
 systemctl start openvpn@server2.service
 
 # Create rc.local script
-wget -O /etc/systemd/system/dexter.service "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/dexter.service"
+wget -O /etc/systemd/system/dexter.service "https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/dxplusdev.service"
 
 echo '#!/bin/sh -e
 iptables-restore < /etc/iptables_rules.v4
