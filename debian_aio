@@ -1,5 +1,5 @@
 
-#---------------[ Timezone ]-------------------------
+#---------------[ Timezone ]----------------------#
 timedatectl set-timezone Asia/Mymensingh
 
 #====================================================
@@ -193,7 +193,7 @@ chmod 755 /etc/hysteria/.auth.sh
 sysctl -w net.core.rmem_max=16777216
 sysctl -w net.core.wmem_max=16777216
 
-wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/A-l-amin/dxplusdevrepolatest/refs/heads/server_script/badvpn-udpgw64"
+wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/A-l-amin/dxdevrpo/refs/heads/server_script/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
 } &>/dev/null
 }
