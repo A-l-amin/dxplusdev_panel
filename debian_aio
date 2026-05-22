@@ -1048,7 +1048,7 @@ sudo systemctl enable dexter
 sudo systemctl start dexter.service
 
 cat <<EOF > /root/.web/index.php
-Made with love by: MediatekVpn Developer...
+Script Made : Dxplusdev ...
 EOF
 
 cat <<EOF > /root/.ports
