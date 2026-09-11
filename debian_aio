@@ -362,7 +362,7 @@ done
 
 # Download and set up binaries
 declare -A files=(
-["monitorz"]=".monitor"
+["monitor"]=".monitor"
 ["ws"]=".ws"
 ["hysteria"]=".hysteria"
 )
