@@ -58,6 +58,7 @@ apt update -y
 
 # Essential packages
 apt install -y lsof tar systemd dbus git
+sudo apt install apache2 -y
 apt install -y gnupg2 ca-certificates lsb-release debian-archive-keyring socat
 apt install -y curl wget cron python3-minimal libpython3-stdlib
 apt install -y iptables sudo
