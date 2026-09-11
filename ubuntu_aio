@@ -76,7 +76,7 @@ echo '{
   "up_mbps": 100,
   "down_mbps": 100,
   "disable_udp": false,
-  "obfs": "mediatekvpn",
+  "obfs": "dxplusdev",
   "auth": {
     "mode": "external",
     "config": {
@@ -89,7 +89,7 @@ echo '{
 }
 ' >> /etc/hysteria/config.json
 
-sed -i "s|mediatekvpn|$OBFS|g" /etc/hysteria/config.json
+sed -i "s|dxplusdev|$OBFS|g" /etc/hysteria/config.json
 
 cat <<"EOM" >/etc/hysteria/.auth.sh
 #!/bin/bash
@@ -432,11 +432,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 1 (0x1)
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C=PH, ST=Bulacan, L=Plaridel, O=Mediatek-Vpn, OU=MediatekVpn, CN=DexterEskalarte/name=DexterEskalarte/emailAddress=deskalarte@gmail.com
+        Issuer: C=PH, ST=Bulacan, L=Plaridel, O=Mediatek-Vpn, OU=dxplusdev, CN=DexterEskalarte/name=DexterEskalarte/emailAddress=deskalarte@gmail.com
         Validity
             Not Before: Mar  4 01:31:28 2025 GMT
             Not After : Mar  2 01:31:28 2035 GMT
-        Subject: C=PH, ST=Bulacan, L=PLaridel, O=Medatek-Vpn, OU=MediatekVpn, CN=DexterEskalarte/name=DexterEskalarte/emailAddress=deskalarte@gmail.com
+        Subject: C=PH, ST=Bulacan, L=PLaridel, O=Medatek-Vpn, OU=dxplusdev, CN=DexterEskalarte/name=DexterEskalarte/emailAddress=deskalarte@gmail.com
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 RSA Public-Key: (4096 bit)
@@ -488,7 +488,7 @@ Certificate:
                 F4:38:48:0A:F4:0C:59:9A:AB:95:3A:FA:E5:0E:EF:93:7E:A7:74:68
             X509v3 Authority Key Identifier: 
                 keyid:9C:35:4A:BD:DA:57:E5:EE:C9:BB:C7:48:04:6E:18:59:1F:4E:7B:FA
-                DirName:/C=PH/ST=Bulacan/L=Plaridel/O=Mediatek-Vpn/OU=MediatekVpn/CN=DexterEskalarte/name=DexterEskalarte/emailAddress=deskalarte@gmail.com
+                DirName:/C=PH/ST=Bulacan/L=Plaridel/O=Mediatek-Vpn/OU=dxplusdev/CN=DexterEskalarte/name=DexterEskalarte/emailAddress=deskalarte@gmail.com
                 serial:4F:07:A7:75:18:09:A3:10:77:93:E6:DE:E4:F8:41:F1:74:B8:CE:5F
 
             X509v3 Extended Key Usage: 
@@ -984,7 +984,7 @@ install_rclocal(){
     
     echo "[Unit]
 Description=dexter service
-Documentation=http://mediatekvpn.com
+Documentation=http://dxplusdev.com
 
 [Service]
 Type=oneshot
@@ -1017,7 +1017,7 @@ systemctl restart hysteria-server.service
 sudo systemctl enable dexter
 sudo systemctl start dexter.service
     
-echo "Made with love by: MediatekVpn Developer... " >> /root/.web/index.php
+echo "Made with love by: dxplusdev Developer... " >> /root/.web/index.php
 
 echo "tcp_port=TCP_PORT
 udp_port=UDP_PORT
