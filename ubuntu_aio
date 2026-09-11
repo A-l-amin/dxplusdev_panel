@@ -755,8 +755,12 @@ DNS PUBLIC KEY : $(cat /root/.dns/server.pub)
 
 -----------------------
 
-FB Page : https://www.facebook.com/mohammad.abdula24
-Whatsapp Contact: https://wa.link/sgmw64
+Script Made : Dxplusdev Bd
+WhatsApp    : http://wa.me/+8801790026703
+Gmail       : dxplusdev@gmail.com    
+
+For issues or suggestions please Contact DX PLUS DEV (https://t.me/dxplusdeveloper).
+EOF
 
 " >> /root/.web/$secretkey.txt
 
