@@ -118,7 +118,7 @@ StartLimitIntervalSec=0
 EOF
 
 # Download banner
-wget -q -O /etc/banner "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/SshBanner"
+wget -q -O /etc/banner "https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/SshBanner"
 chmod 644 /etc/banner
 
 # Reload systemd and restart services
