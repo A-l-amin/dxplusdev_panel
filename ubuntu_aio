@@ -58,7 +58,7 @@ clear
 
 #====================================================
 #	Installing Hysteria UDP
-#	Finalized: MtkDex Developer
+#	Finalized: Dxplusdev Developer
 #====================================================
 
 install_hysteria(){
@@ -216,7 +216,7 @@ sudo cp /etc/apt/sources.list_backup /etc/apt/sources.list
 
 #====================================================
 #	Installing OpenVPN
-#	Finalized: MtkDex Developer
+#	Finalized: Dxplusdev Developer
 #====================================================
 
 install_openvpn()
@@ -652,7 +652,7 @@ chmod 755 /etc/openvpn/login/auth_vpn
 
 #====================================================
 #	Installing SlowDNS
-#	Finalized: MtkDex Developer
+#	Finalized: Dxplusdev Developer
 #====================================================
 
 install_slowdns (){
@@ -967,7 +967,7 @@ sudo service dropbear restart
 
 #====================================================
 #	Finalizing Server Setup
-#	Finalized: MtkDex Developer
+#	Finalized: Dxplusdev Developer
 #====================================================
 
 install_rclocal(){
