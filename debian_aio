@@ -3,7 +3,8 @@
 timedatectl set-timezone Asia/Manila
 
 #====================================================
-#   Install Sudo & User
+# Install Sudo & User
+#	Bangladesh: Dxplusdev Developer
 #====================================================
 install_sudo(){
 # Create user if not exists
@@ -26,7 +27,8 @@ systemctl restart ssh || systemctl restart sshd
 }
 
 #====================================================
-#   Install Requirements
+# Install Requirements
+#	Bangladesh: Dxplusdev Developer
 #====================================================
 install_require() {
 clear
@@ -121,7 +123,8 @@ echo "[INFO] Dependencies, OpenSSH (22), and Dropbear (442) setup completed."
 }
 
 #====================================================
-#   Install Hysteria UDP
+# Install Hysteria UDP
+#	Bangladesh: Dxplusdev Developer
 #====================================================
 install_hysteria(){
 clear
@@ -196,7 +199,8 @@ chmod +x /usr/bin/badvpn-udpgw
 }
 
 #====================================================
-#   Install BBR
+# Install BBR
+#	Bangladesh: Dxplusdev Developer
 #====================================================
 installBBR() {
 echo "Installing & enabling BBR..."
@@ -223,7 +227,8 @@ INSTALL_BBR=true
 }
 
 #====================================================
-#   Install Squid Proxy
+# Install Squid Proxy
+#	Bangladesh: Dxplusdev Developer
 #===================================================
 install_squid(){
 clear
@@ -369,7 +374,8 @@ sudo cp /etc/apt/sources.list_backup /etc/apt/sources.list
 }
 
 #====================================================
-#   Install OpenVPN
+# Install OpenVPN
+#	Bangladesh: Dxplusdev Developer
 #====================================================
 install_openvpn()
 {
@@ -501,7 +507,7 @@ sed -i "s|DBNAME|$DBNAME|g" /etc/openvpn/login/config.sh
 
 #====================================================
 #	Finalizing Server Authentication
-#	Finalized: MtkDex Developer
+#	Bangladesh: Dxplusdev Developer
 #====================================================
 /bin/cat <<"EOM" >/etc/openvpn/login/auth_vpn
 #!/bin/bash
@@ -552,7 +558,7 @@ sed -i "s|SERVER_IP|$server_ip|g" /etc/openvpn/login/disconnect.sh
 
 #====================================================
 #	Finalizing Server Certificate
-#	Finalized: MtkDex Developer
+#	Bangladesh: Dxplusdev Developer
 #====================================================
 cat << EOF > /etc/openvpn/easy-rsa/keys/ca.crt
 -----BEGIN CERTIFICATE-----
@@ -683,7 +689,8 @@ chmod 755 /etc/openvpn/login/auth_vpn
 }
 
 #====================================================
-#   Install SlowDNS
+# Install SlowDNS
+#	Bangladesh: Dxplusdev Developer
 #====================================================
 install_slowdns (){
 echo "Installing dns..."
@@ -836,7 +843,8 @@ systemctl start server-sldns
 }
 
 #====================================================
-#   Install Firewall & Iptables
+# Install Firewall & Iptables
+#	Bangladesh: Dxplusdev Developer
 #====================================================
 install_firewall_kvm() {
 clear
@@ -891,7 +899,8 @@ echo "[INFO] Firewall setup completed"
 }
 
 #====================================================
-#   Install Stunnel & Dropbear
+# Install Stunnel & Dropbear
+#	Bangladesh: Dxplusdev Developer
 #====================================================
 install_stunnel() {
   {
@@ -1058,7 +1067,8 @@ sed -i "s|PORT_SSL|$PORT_SSL|g" /root/.ports
 }
 
 #====================================================
-#   Start Services
+# Start Services
+#	Bangladesh: Dxplusdev Developer
 #====================================================
 start_service() {
     clear
@@ -1089,7 +1099,8 @@ reboot
 }
 
 #====================================================
-#   Main Execution
+# Main Execution
+#	Bangladesh: Dxplusdev Developer
 #====================================================
 server_ip=$(curl -s ipinfo.io/ip)
 server_interface=$(ip route get 8.8.8.8 | awk '{print $5; exit}')
