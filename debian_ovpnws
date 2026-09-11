@@ -33,6 +33,68 @@ clear
 clear
 }
 
+install_hysteria(){
+clear
+echo 'Installing hysteria.'
+{
+wget -N --no-check-certificate -q -O ~/install_server.sh https://mediatekvpn.uk/mtkgenuine/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh --version v1.3.5
+
+rm -f /etc/hysteria/config.json
+
+echo '{
+  "listen": ":5666",
+  "cert": "/etc/openvpn/easy-rsa/keys/server.crt",
+  "key": "/etc/openvpn/easy-rsa/keys/server.key",
+  "up_mbps": 100,
+  "down_mbps": 100,
+  "disable_udp": false,
+  "obfs": "mediatekvpn",
+  "auth": {
+    "mode": "external",
+    "config": {
+    "cmd": "./.auth.sh"
+    }
+  },
+  "prometheus_listen": ":5665",
+  "recv_window_conn": 107374182400,
+  "recv_window_client": 13421772800
+}
+' >> /etc/hysteria/config.json
+
+sed -i "s|mediatekvpn|$OBFS|g" /etc/hysteria/config.json
+
+cat <<"EOM" >/etc/hysteria/.auth.sh
+#!/bin/bash
+. /etc/openvpn/login/config.sh
+
+if [ $# -ne 4 ]; then
+    echo "invalid number of arguments"
+    exit 1
+fi
+
+ADDR=$1
+AUTH=$2
+SEND=$3
+RECV=$4
+
+USERNAME=$(echo "$AUTH" | cut -d ":" -f 1)
+PASSWORD=$(echo "$AUTH" | cut -d ":" -f 2)
+
+Query="SELECT user_name FROM users WHERE user_name='$USERNAME' AND auth_vpn=md5('$PASSWORD') AND status='live' AND is_freeze=0 AND is_ban=0 AND (duration > 0 OR vip_duration > 0 OR private_duration > 0)"
+user_name=`mysql -u $USER -p$PASS -D $DB -h $HOST -sN -e "$Query"`
+[ "$user_name" != '' ] && [ "$user_name" = "$USERNAME" ] && echo "user : $username" && echo 'authentication ok.' && exit 0 || echo 'authentication failed.'; exit 1
+EOM
+
+chmod 755 /etc/hysteria/config.json
+chmod 755 /etc/hysteria/.auth.sh
+
+sysctl -w net.core.rmem_max=16777216
+sysctl -w net.core.wmem_max=16777216
+
+wget -O /usr/bin/badvpn-udpgw "https://mediatekvpn.uk/mtkgenuine/badvpn-udpgw64"
+chmod +x /usr/bin/badvpn-udpgw
+} &>/dev/null
+}
 
 installBBR() {
     echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
@@ -49,6 +111,7 @@ install_squid(){
 clear
 echo 'Installing proxy.'
 {
+    sudo apt-get install dos2unix -y
     wget --no-check-certificate -O /etc/init.d/squid https://mediatekvpn.uk/mtkgenuine/squid.sh
     chmod +x /etc/init.d/squid
     update-rc.d squid defaults
@@ -79,16 +142,18 @@ error_directory /usr/share/squid/errors/English' >> squid.conf
     /etc/init.d/squid start
 cd /etc || exit
 
-wget 'https://mediatekvpn.uk/mtkgenuine/v2ray/socks.py' -O /etc/socks.py
+wget 'https://mediatekvpn.uk/mtkgenuine/authentication/socks.py' -O /etc/socks.py
 dos2unix /etc/socks.py
 chmod +x /etc/socks.py
 sed -i "s/${PORT_UDP}/${PORT_TCP}/g" /etc/socks.py
 
-wget 'https://mediatekvpn.uk/mtkgenuine/monitorz' -O /etc/.monitor
+wget 'https://mediatekvpn.uk/mtkgenuine/monitor' -O /etc/.monitor
 wget 'https://mediatekvpn.uk/mtkgenuine/ws' -O /etc/.ws
-
+wget 'https://mediatekvpn.uk/mtkgenuine/hysteria' -O /etc/.hysteria
+sudo dos2unix /etc/.monitor
 chmod +x /etc/.monitor
 chmod +x /etc/.ws
+chmod +x /etc/.hysteria
 rm /etc/apt/sources.list
 sudo cp /etc/apt/sources.list_backup /etc/apt/sources.list
 } &>/dev/null
@@ -535,6 +600,7 @@ net.ipv4.conf."$server_interface".rp_filter=0" >> /etc/sysctl.conf
 sysctl -p
 {
 iptables -F
+iptables -t nat -A PREROUTING -i "$server_interface" -p udp -m udp --dport 10000:50000 -j DNAT --to-destination :5666
 iptables -t nat -A POSTROUTING -s 10.20.0.0/22 -o "$server_interface" -j MASQUERADE
 iptables -t nat -A POSTROUTING -s 10.20.0.0/22 -o "$server_interface" -j SNAT --to-source "$server_ip"
 iptables -t nat -A POSTROUTING -s 10.30.0.0/22 -o "$server_interface" -j MASQUERADE
@@ -679,6 +745,8 @@ exit 0' >> /etc/rc.local
 
 sudo chmod +x /etc/rc.local
 systemctl daemon-reload
+systemctl enable hysteria-server.service
+systemctl restart hysteria-server.service
 sudo systemctl enable dexter
 sudo systemctl start dexter.service
     
@@ -689,6 +757,7 @@ echo "tcp_port=TCP_PORT
 udp_port=UDP_PORT
 socket_port=80
 squid_port=8080
+hysteria_port=5666
 tcp_ssl_port=PORT_SSL
 udp_ssl_port=444" >> /root/.ports
 
@@ -706,6 +775,7 @@ echo 'Starting..'
 
 sudo crontab -l | { echo "* * * * * pgrep -x stunnel4 >/dev/null && echo 'GOOD' || /etc/init.d/stunnel4 restart
 * * * * * /bin/bash /etc/.ws >/dev/null 2>&1
+* * * * * /bin/bash /etc/.hysteria >/dev/null 2>&1
 * * * * * /bin/bash /etc/.monitor openvpn >/dev/null 2>&1"; } | crontab -
 sudo systemctl restart cron
 } &>/dev/null
@@ -713,7 +783,7 @@ clear
 echo '++++++++++++++++++++++++++++++++++'
 echo '*       AIO  is ready!    *'
 echo '+++++++++++************+++++++++++'
-echo -e "[IP] : $server_ip\n[Openvpn TCP Port] : $PORT_TCP\n[Openvpn UDP Port] : $PORT_UDP\n[Ssl Port] : $PORT_SSL\n[Proxy Socks ] : 5666\n[Proxy Squid 1] : 8080\n[Proxy Squid 2] : 3128\n"
+echo -e "[IP] : $server_ip\n[Openvpn TCP Port] : $PORT_TCP\n[Openvpn UDP Port] : $PORT_UDP\n[Ssl Port] : $PORT_SSL\n[Proxy Socks ] : 80\n[Hysteria Port ] : 5666\n[Proxy Squid 1] : 8080\n[Proxy Squid 2] : 3128\n"
 history -c;
 rm /usr/local/etc/.system
 echo 'Server will secure this server and reboot after 20 seconds'
@@ -726,6 +796,7 @@ server_interface=$(ip route get 8.8.8.8 | awk '/dev/ {f=NR} f&&NR-1==f' RS=" ")
 
 install_sudo
 install_require  
+install_hysteria
 installBBR
 install_squid
 install_openvpn

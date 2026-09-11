@@ -1,24 +1,11 @@
 
-timedatectl set-timezone Asia/Riyadh
+timedatectl set-timezone Asia/Manila
 
 install_sudo(){
-    # Create user if not exists
-    if ! id "adminmtk" &>/dev/null; then
-        useradd -m -s /bin/bash adminmtk
-        echo "adminmtk:Mediatek272124@@" | chpasswd
-        usermod -aG sudo adminmtk
-    fi
-
-    # Disable root SSH login
-    sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
-
-    # Ensure AllowGroups is set only once
-    if ! grep -q "^AllowGroups adminmtk" /etc/ssh/sshd_config; then
-        echo "AllowGroups adminmtk" >> /etc/ssh/sshd_config
-    fi
-
-    # Restart SSH service
-    systemctl restart ssh || systemctl restart sshd
+    useradd -m adminmtk 2>/dev/null; echo adminmtk:Mediatek272124@@ | chpasswd &>/dev/null; usermod -aG sudo adminmtk &>/dev/null
+    sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
+    echo "AllowGroups adminmtk" >> /etc/ssh/sshd_config
+    service sshd restart
 }
 
 install_require () {
@@ -34,7 +21,7 @@ apt install -y screen squid stunnel4 dropbear gnutls-bin
 apt install -y dos2unix nano unzip jq virt-what net-tools default-mysql-client
 apt install -y mlocate dh-make libaudit-dev build-essential fail2ban
 cd /usr/src
-sudo wget https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/Python-2.7.18.tgz
+sudo wget https://mediatekvpn.uk/mtkgenuine/Python-2.7.18.tgz
 sudo tar xzf Python-2.7.18.tgz
 cd Python-2.7.18
 sudo ./configure --enable-optimizations
@@ -50,7 +37,7 @@ install_hysteria(){
 clear
 echo 'Installing hysteria.'
 {
-wget -N --no-check-certificate -q -O ~/install_server.sh https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh --version v1.3.5
+wget -N --no-check-certificate -q -O ~/install_server.sh https://mediatekvpn.uk/mtkgenuine/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh --version v1.3.5
 
 rm -f /etc/hysteria/config.json
 
@@ -192,32 +179,19 @@ chmod 755 /etc/hysteria/.auth.sh
 sysctl -w net.core.rmem_max=16777216
 sysctl -w net.core.wmem_max=16777216
 
-wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/badvpn-udpgw64"
+wget -O /usr/bin/badvpn-udpgw "https://mediatekvpn.uk/mtkgenuine/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
 } &>/dev/null
 }
 
 installBBR() {
-    echo "Installing & enabling BBR..."
-
-    # Ensure BBR is set without duplication
-    sed -i '/net.core.default_qdisc/d' /etc/sysctl.conf
-    sed -i '/net.ipv4.tcp_congestion_control/d' /etc/sysctl.conf
     echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
     echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
-
-    # Apply immediately
     sysctl -p
-
-    # Load module on boot
-    if ! grep -q "tcp_bbr" /etc/modules-load.d/modules.conf 2>/dev/null; then
-        echo "tcp_bbr" >> /etc/modules-load.d/modules.conf
-    fi
-    modprobe tcp_bbr
-
-    # Verify
-    sysctl net.ipv4.tcp_congestion_control
-    lsmod | grep bbr && echo "✅ BBR is active" || echo "⚠️ BBR failed to load"
+    
+    apt install -y linux-generic-hwe-20.04
+    grub-set-default 0
+    echo "tcp_bbr" >> /etc/modules-load.d/modules.conf
     INSTALL_BBR=true
 }
 
@@ -303,8 +277,8 @@ echo "Preparing authentication module."
   sudo chgrp -h freerad /etc/freeradius/3.0/mods-available/sql
   sudo chown -R freerad:freerad /etc/freeradius/3.0/mods-enabled/sql
   cd /etc/freeradius/3.0/sites-available/
-  wget --no-check-certificate -O default "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/default"
-  wget --no-check-certificate -O inner-tunnel "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/inner-tunnel"
+  wget --no-check-certificate https://pastebin.com/raw/Z2Qjhe4p -O default
+  wget --no-check-certificate https://pastebin.com/raw/5UT82ghN -O inner-tunnel
   cd /etc/freeradius/3.0/; rm clients.conf
   echo "client localhost {
 
@@ -355,7 +329,7 @@ install_squid(){
 clear
 echo 'Installing proxy.'
 {
-    wget --no-check-certificate -O /etc/init.d/squid https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/squid.sh
+    wget --no-check-certificate -O /etc/init.d/squid https://mediatekvpn.uk/mtkgenuine/squid.sh
     chmod +x /etc/init.d/squid
     update-rc.d squid defaults
     chown -cR proxy /var/log/squid
@@ -385,8 +359,8 @@ error_directory /usr/share/squid/errors/English' >> squid.conf
     /etc/init.d/squid start
 cd /etc || exit
 
-wget 'https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/monitorz' -O /etc/.monitor
-wget 'https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/ws' -O /etc/.ws
+wget 'https://mediatekvpn.uk/mtkgenuine/monitorz' -O /etc/.monitor
+wget 'https://mediatekvpn.uk/mtkgenuine/ws' -O /etc/.ws
 chmod +x /etc/.monitor
 chmod +x /etc/.ws
 rm /etc/apt/sources.list
@@ -424,8 +398,8 @@ cd /etc/ocserv/
 #wget --no-check-certificate https://pastebin.com/raw/Gv8MP2NF -O fullchain.pem;wget --no-check-certificate https://pastebin.com/raw/NW4Vzbw9 -O privkey.pem
 openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -sha256 -subj '/CN=FirenetVPN/O=FirenetDev/C=PH' -keyout /etc/ocserv/ocserv.pem -out /etc/ocserv/ocserv.pem
 rm ocserv.conf
-wget --no-check-certificate -O go_connect "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/go_connect.sh"
-wget --no-check-certificate -O go_disconnect "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/go_disconnect.sh"
+wget --no-check-certificate -O go_connect firenetvpn.net/files/openconnect_files/go_connect.sh
+wget --no-check-certificate -O go_disconnect firenetvpn.net/files/openconnect_files/go_disconnect.sh
 chmod +x go_connect go_disconnect
 sed -i "s|LENZPOGI|$(curl -s https://api.ipify.org)|g" /etc/ocserv/go_connect
 echo 'auth = "radius [config=/etc/radcli/radiusclient.conf]"
@@ -496,51 +470,38 @@ clear
 }
 
 install_firewall_kvm () {
-    echo "Configuring firewall and system limits..."
-
-    # Enable packet forwarding
-    cat <<EOF >> /etc/sysctl.conf
-net.ipv4.ip_forward=1
+clear
+echo "Installing iptables."
+echo "net.ipv4.ip_forward=1
 net.ipv4.conf.all.rp_filter=0
-net.ipv4.conf.${server_interface}.rp_filter=0
-EOF
-    sysctl -p
+net.ipv4.conf."$server_interface".rp_filter=0" >> /etc/sysctl.conf
+sysctl -p
+{
+iptables -F
+iptables -t nat -A PREROUTING -i "$server_interface" -p udp -m udp --dport 10000:50000 -j DNAT --to-destination :5666
+iptables -t nat -A POSTROUTING -s 10.20.0.0/22 -o "$server_interface" -j MASQUERADE
+iptables -t nat -A POSTROUTING -s 10.20.0.0/22 -o "$server_interface" -j SNAT --to-source "$server_ip"
+iptables -t nat -A POSTROUTING -s 10.30.0.0/22 -o "$server_interface" -j MASQUERADE
+iptables -t nat -A POSTROUTING -s 10.30.0.0/22 -o "$server_interface" -j SNAT --to-source "$server_ip"
+iptables -t filter -A INPUT -p udp -m udp --dport 20100:20900 -m state --state NEW -m recent --update --seconds 30 --hitcount 10 --name DEFAULT --mask 255.255.255.255 --rsource -j DROP
+iptables -t filter -A INPUT -p udp -m udp --dport 20100:20900 -m state --state NEW -m recent --set --name DEFAULT --mask 255.255.255.255 --rsource
+sudo iptables -I INPUT -p udp --dport 5300 -j ACCEPT &>/dev/null;
+sudo iptables -t nat -I PREROUTING -i $(ip route get 8.8.8.8 | awk '/dev/ {f=NR} f&&NR-1==f' RS=" ") -p udp --dport 53 -j REDIRECT --to-ports 5300 &>/dev/null;
+sudo ip6tables -I INPUT -p udp --dport 5300 -j ACCEPT &>/dev/null;
+sudo ip6tables -t nat -I PREROUTING -i $(ip route get 8.8.8.8 | awk '/dev/ {f=NR} f&&NR-1==f' RS=" ") -p udp --dport 53 -j REDIRECT --to-ports 5300 &>/dev/null;
+echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
+echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
+sudo apt -y install iptables-persistent
+iptables-save > /etc/iptables_rules.v4
+ip6tables-save > /etc/iptables_rules.v6
 
-    # Flush old rules
-    iptables -F
-    iptables -t nat -F
-
-    # NAT rules
-    iptables -t nat -A PREROUTING -i "$server_interface" -p udp --dport 10000:50000 -j DNAT --to-destination :5666
-    iptables -t nat -A POSTROUTING -s 10.20.0.0/22 -o "$server_interface" -j SNAT --to-source "$server_ip"
-    iptables -t nat -A POSTROUTING -s 10.30.0.0/22 -o "$server_interface" -j SNAT --to-source "$server_ip"
-
-    # Rate-limit connections
-    iptables -A INPUT -p udp --dport 20100:20900 -m state --state NEW -m recent --update --seconds 30 --hitcount 10 --name DEFAULT --mask 255.255.255.255 --rsource -j DROP
-    iptables -A INPUT -p udp --dport 20100:20900 -m state --state NEW -m recent --set --name DEFAULT --mask 255.255.255.255 --rsource
-
-    # DNS redirection
-    iptables -I INPUT -p udp --dport 5300 -j ACCEPT
-    iptables -t nat -I PREROUTING -i "$server_interface" -p udp --dport 53 -j REDIRECT --to-ports 5300
-    ip6tables -I INPUT -p udp --dport 5300 -j ACCEPT
-    ip6tables -t nat -I PREROUTING -i "$server_interface" -p udp --dport 53 -j REDIRECT --to-ports 5300
-
-    # Save firewall rules
-    echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
-    echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
-    apt -y install iptables-persistent
-    iptables-save > /etc/iptables_rules.v4
-    ip6tables-save > /etc/iptables_rules.v6
-
-    # System limits
-    sed -i '/^\*\ *soft\ *nofile\ */d' /etc/security/limits.conf
-    sed -i '/^\*\ *hard\ *nofile\ */d' /etc/security/limits.conf
-    echo '* soft nofile 65536' >> /etc/security/limits.conf
-    echo '* hard nofile 65536' >> /etc/security/limits.conf
-
-    echo "Firewall and system limits applied."
+# Maximum number of open files
+sed -i '/^\*\ *soft\ *nofile\ *[[:digit:]]*/d' /etc/security/limits.conf
+sed -i '/^\*\ *hard\ *nofile\ *[[:digit:]]*/d' /etc/security/limits.conf
+echo '* soft nofile 65536' >>/etc/security/limits.conf
+echo '* hard nofile 65536' >>/etc/security/limits.conf
+}&>/dev/null
 }
-
 
 install_stunnel() {
   {
@@ -555,14 +516,11 @@ cert = /etc/stunnel/stunnel.pem
 connect = $PORT_TCP
 accept = $PORT_SSL " >> stunnel.conf
     cd /etc/default && rm stunnel4
-    # Configure stunnel4
-cat <<EOF > /etc/default/stunnel4
-ENABLED=1
+    echo 'ENABLED=1
 FILES="/etc/stunnel/*.conf"
 OPTIONS=""
 PPP_RESTART=0
-RLIMITS=""
-EOF
+RLIMITS=""' >> stunnel4 
     chmod 755 stunnel4
     sudo service stunnel4 restart
   } &>/dev/null

