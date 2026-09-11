@@ -1,6 +1,6 @@
 
 #---------------[ Timezone ]-------------------------
-timedatectl set-timezone Asia/Manila
+timedatectl set-timezone Asia/My mensingh
 
 #====================================================
 # Install Sudo & User
