@@ -969,9 +969,7 @@ sudo service dropbear restart
 #====================================================
 install_rclocal() {
     {
-sed -i 's/Listen 80/Listen 81/g' /etc/apache2/ports.conf
     systemctl restart apache2
-    
     sudo systemctl restart stunnel4
     sudo systemctl restart hysteria-server
     sudo systemctl enable openvpn@server.service
