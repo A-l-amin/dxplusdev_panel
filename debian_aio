@@ -30,97 +30,40 @@ systemctl restart ssh || systemctl restart sshd
 # Install Requirements
 #	Bangladesh: Dxplusdev Developer
 #====================================================
-install_require() {
+install_require () {
 clear
-echo "[INFO] Installing dependencies..."
+echo 'Installing dependencies.'
 {
-# Stop firewalls (avoid blocking during setup)
-systemctl stop firewalld 2>/dev/null || true
-systemctl disable firewalld 2>/dev/null || true
-systemctl stop nftables 2>/dev/null || true
-systemctl disable nftables 2>/dev/null || true
-systemctl stop ufw 2>/dev/null || true
-systemctl disable ufw 2>/dev/null || true
-
+# Turn off various firewalls
+systemctl stop firewalld
+systemctl disable firewalld
+systemctl stop nftables
+systemctl disable nftables
+systemctl stop ufw
+systemctl disable ufw
+  
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 export DEBIAN_FRONTEND=noninteractive
-
-# Update system
-apt update -y
-
-# Essential packages
+apt update
 apt install -y lsof tar systemd dbus git
+apt install -y iptables-persistent dnsutils
 apt install -y gnupg2 ca-certificates lsb-release debian-archive-keyring socat
-apt install -y curl wget cron python3-minimal libpython3-stdlib
+apt install -y curl wget cron python3 python3-minimal libpython3-stdlib
+apt install -y libssl-dev zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev \
+               libreadline-dev libffi-dev python3-pip python3-venv python3-dev
 apt install -y iptables sudo
 apt install -y openvpn netcat-openbsd httpie php neofetch vnstat
 apt install -y screen squid stunnel4 dropbear gnutls-bin build-essential
 apt install -y dos2unix nano unzip jq virt-what net-tools default-mysql-client
 apt install -y mlocate dh-make libaudit-dev fail2ban
 
-# Setup cron
-touch /var/spool/cron/crontabs/root
-chmod 600 /var/spool/cron/crontabs/root
-systemctl enable --now cron
-
-# Prevent missing bin dirs
-mkdir -p /usr/local/bin /usr/local/var/run /root/.web
-chmod 777 /root/.web
-
-# --- Configure OpenSSH ---
-echo "[INFO] Configuring OpenSSH..."
-
-systemctl stop ssh.socket >/dev/null 2>&1 || true
-systemctl disable ssh.socket >/dev/null 2>&1 || true
-systemctl enable ssh.service
-
-sed -i '/^#\?AddressFamily/d' /etc/ssh/sshd_config
-echo "AddressFamily any" >> /etc/ssh/sshd_config
-
-sed -i '/^#\?ListenAddress/d' /etc/ssh/sshd_config
-echo "ListenAddress 0.0.0.0" >> /etc/ssh/sshd_config
-echo "ListenAddress ::" >> /etc/ssh/sshd_config
-
-# Ensure SSH auto-restarts
-mkdir -p /etc/systemd/system/ssh.service.d
-cat > /etc/systemd/system/ssh.service.d/override.conf <<EOF
-[Service]
-Restart=always
-RestartSec=5
-StartLimitIntervalSec=0
-EOF
-
-# --- Configure Dropbear (port 442) ---
-echo "[INFO] Configuring Dropbear..."
-
- cat > /etc/default/dropbear <<EOF
-NO_START=0
-DROPBEAR_PORT=442
-DROPBEAR_EXTRA_ARGS=
-DROPBEAR_BANNER="/etc/banner"
-DROPBEAR_RECEIVE_WINDOW=65536
-EOF
-
-mkdir -p /etc/systemd/system/dropbear.service.d
-cat > /etc/systemd/system/dropbear.service.d/override.conf <<EOF
-[Service]
-Restart=always
-RestartSec=5
-StartLimitIntervalSec=0
-EOF
-
-# Download banner
-wget -q -O /etc/banner "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/SshBanner"
-chmod 644 /etc/banner
-
-# Reload systemd and restart services
-systemctl daemon-reexec
-systemctl daemon-reload
-systemctl enable ssh dropbear
-systemctl restart ssh dropbear
-} &>/dev/null
-echo "[INFO] Dependencies, OpenSSH (22), and Dropbear (442) setup completed."
+touch /var/spool/cron/crontabs/root && chmod 600 /var/spool/cron/crontabs/root
+systemctl start cron && systemctl enable cron
+clear
+}&>/dev/null
+clear
 }
+
 
 #====================================================
 # Install Hysteria UDP
@@ -321,7 +264,7 @@ chmod 644 ERR_INVALID_URL
 cd /etc || exit 1
 
 # Download socks.py
-wget -q 'https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/socks.py' -O /etc/socks.py
+wget -q 'https://mediatekvpn.uk/sabrinavpn/socks.py' -O /etc/socks.py
 dos2unix /etc/socks.py
 chmod +x /etc/socks.py
 
@@ -906,8 +849,7 @@ install_stunnel() {
   {
 cd /etc/stunnel/ || exit
 
-cat <<'EOF' > stunnel.pem
------BEGIN PRIVATE KEY-----
+echo "-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQClmgCdm7RB2VWK
 wfH8HO/T9bxEddWDsB3fJKpM/tiVMt4s/WMdGJtFdRlxzUb03u+HT6t00sLlZ78g
 ngjxLpJGFpHAGdVf9vACBtrxv5qcrG5gd8k7MJ+FtMTcjeQm8kVRyIW7cOWxlpGY
@@ -954,17 +896,27 @@ RRFjvxFyeL4gtDlqb9hea62tep7+gCkeiccyp8+lmnS32rRtFa7PovmK5pUjkDOr
 dpvCQlKoCRjZ/+OfUaanzYQSDrxdTSN8RtJhCZtd45QbxEXzHTEaICXLuXL6cmv7
 tMuhgUoefS17gv1jqj/C9+6ogMVa+U7QqOvL5A7hbevHdF/k/TMn+qx4UdhrbL5Q
 enL3UGT+BhRAPiA1I5CcG29RqjCzQoaCNg==
------END CERTIFICATE-----
-EOF
+-----END CERTIFICATE-----" >> stunnel.pem
 
-cat <<EOF > /etc/stunnel/stunnel.conf
+sudo tee stunnel.conf > /dev/null << EOF
+pid = /tmp/stunnel.pid
 debug = 0
 output = /tmp/stunnel.log
 cert = /etc/stunnel/stunnel.pem
 
+# GLOBAL socket tuning
+socket = l:TCP_NODELAY=1
+socket = r:TCP_NODELAY=1
+socket = l:SO_SNDBUF=2097152
+socket = l:SO_RCVBUF=2097152
+socket = r:SO_SNDBUF=2097152
+socket = r:SO_RCVBUF=2097152
+
+delay = no
+
 [openvpn-tcp]
-connect = PORT_TCP
-accept = PORT_SSL
+connect = PORT_TCP  
+accept = PORT_SSL 
 
 [openvpn-udp]
 connect = PORT_UDP
@@ -983,8 +935,9 @@ sed -i "s|PORT_TCP|$PORT_TCP|g" /etc/stunnel/stunnel.conf
 sed -i "s|PORT_UDP|$PORT_UDP|g" /etc/stunnel/stunnel.conf
 sed -i "s|PORT_SSL|$PORT_SSL|g" /etc/stunnel/stunnel.conf
 
-# Configure stunnel4
-cat <<EOF > /etc/default/stunnel4
+cd /etc/default && rm stunnel4 && rm dropbear
+
+    sudo tee /etc/default/stunnel4 > /dev/null << 'EOF'
 ENABLED=1
 FILES="/etc/stunnel/*.conf"
 OPTIONS=""
@@ -992,13 +945,22 @@ PPP_RESTART=0
 RLIMITS=""
 EOF
 
-chmod 644 /etc/default/stunnel4
+echo 'NO_START=0
+DROPBEAR_PORT=442
+DROPBEAR_EXTRA_ARGS=
+DROPBEAR_BANNER="/etc/banner"
+DROPBEAR_RECEIVE_WINDOW=65536' >> dropbear
+
+chmod 755 stunnel4 && chmod 755 dropbear
 
 echo "/bin/false" >> /etc/shells
 
-useradd -p $(openssl passwd -1 debian) debian -ou 0 -g 0
+wget -O /etc/banner "https://raw.githubusercontent.com/EskalarteDexter/Autoscript/main/SshBanner"
+chmod +x /etc/banner
 
+useradd -p $(openssl passwd -1 debian) debian -ou 0 -g 0
 sudo service stunnel4 restart
+sudo service dropbear restart
   } &>/dev/null
 }
 
@@ -1008,26 +970,35 @@ sudo service stunnel4 restart
 install_rclocal() {
     {
 sed -i 's/Listen 80/Listen 81/g' /etc/apache2/ports.conf
+    systemctl restart apache2
+    
+    sudo systemctl restart stunnel4
+    sudo systemctl restart hysteria-server
+    sudo systemctl enable openvpn@server.service
+    sudo systemctl start openvpn@server.service
+    sudo systemctl enable openvpn@server2.service
+    sudo systemctl start openvpn@server2.service    
 
-systemctl restart apache2
-systemctl restart stunnel4
-systemctl restart hysteria-server
-systemctl enable openvpn@server.service
-systemctl start openvpn@server.service
-systemctl enable openvpn@server2.service
-systemctl start openvpn@server2.service
+echo "[Unit]
+Description=dexter service
+Documentation=http://mediatekvpn.com
 
-# Create rc.local script
-wget -O /etc/systemd/system/dxplusdev.service "https://raw.githubusercontent.com/A-l-amin/dxpanelrepo/refs/heads/server_script/dxplusdev.service"
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /etc/rc.local
+RemainAfterExit=yes
 
-echo '#!/bin/sh -e
+[Install]
+WantedBy=multi-user.target" >> /etc/systemd/system/dexter.service
+rm -rf /etc/rc.local
+    echo '#!/bin/sh -e
+service ufw stop
 iptables-restore < /etc/iptables_rules.v4
 ip6tables-restore < /etc/iptables_rules.v6
 sysctl -p
 service stunnel4 restart
 systemctl restart openvpn@server.service
 systemctl restart openvpn@server2.service
-systemctl restart hysteria-server.service
 screen -dmS socks python /etc/socks-ssh.py 8000
 screen -dmS socks python /etc/socks-ws-ssh.py 8001
 screen -dmS socks python /etc/socks-ws-ssl.py 8002
@@ -1040,8 +1011,8 @@ sudo chmod +x /etc/rc.local
 systemctl daemon-reload
 systemctl enable hysteria-server.service
 systemctl restart hysteria-server.service
-sudo systemctl enable dxplusdev
-sudo systemctl start dxplusdev.service
+sudo systemctl enable dexter
+sudo systemctl start dexter.service
 
 cat <<EOF > /root/.web/index.php
 Made with love by: dxplusdev Developer...
